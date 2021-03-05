@@ -1,5 +1,4 @@
 import os
-import sys
 import argparse
 import numpy as np
 from PIL import Image
@@ -11,6 +10,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 from src.models.modnet import MODNet
+
 
 
 if __name__ == '__main__':
@@ -99,25 +99,12 @@ if __name__ == '__main__':
         matte = matte[0][0].data.cpu().numpy()
         matte_name = im_name.split('.')[0] + '_output.png'
         mask=Image.fromarray(((matte * 255).astype('uint8')), mode='L')    #.save(os.path.join(args.output_path, matte_name))
-        # ori = np.asarray(ori)
-        # mask = mask.resize(ori.size)
         ori = cv2.cvtColor(np.asarray(ori), cv2.COLOR_RGB2BGR)
         mask = cv2.cvtColor(np.asarray(mask), cv2.COLOR_RGB2BGR)
         mask=cv2.cvtColor(mask,cv2.COLOR_BGR2GRAY)
         ori=cv2.resize(ori,(mask.shape[1],mask.shape[0]))
-        # ret, mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)
-        # cv2.imshow('ori',mask)
-        # cv2.waitKey(0)
         ori[mask == 0] = (255, 255, 255)
-        cv2.imshow('ori',ori)
-        cv2.waitKey(0)
         output=cv2.resize(ori,(w,h))
         cv2.imwrite(os.path.join(args.output_path, matte_name),ori)
-        # print(mask.shape)
-        # print(ori[0])
-        # print(im[0][0][0][0])
-        # output=im*mask
-        # output=Image.fromarray(output, mode='RGB')
-        # output.save(os.path.join(args.output_path, matte_name))
 
 
