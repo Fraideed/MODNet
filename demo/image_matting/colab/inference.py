@@ -3,6 +3,7 @@ import sys
 import argparse
 import numpy as np
 from PIL import Image
+import cv2
 
 import torch
 import torch.nn as nn
@@ -55,7 +56,8 @@ if __name__ == '__main__':
 
         # read image
         im = Image.open(os.path.join(args.input_path, im_name))
-
+        ori=im.copy()
+        (h,w)=ori.size
         # unify image channels to 3
         im = np.asarray(im)
         if len(im.shape) == 2:
@@ -84,7 +86,7 @@ if __name__ == '__main__':
         else:
             im_rh = im_h
             im_rw = im_w
-        
+
         im_rw = im_rw - im_rw % 32
         im_rh = im_rh - im_rh % 32
         im = F.interpolate(im, size=(im_rh, im_rw), mode='area')
@@ -95,5 +97,27 @@ if __name__ == '__main__':
         # resize and save matte
         matte = F.interpolate(matte, size=(im_h, im_w), mode='area')
         matte = matte[0][0].data.cpu().numpy()
-        matte_name = im_name.split('.')[0] + '.png'
-        Image.fromarray(((matte * 255).astype('uint8')), mode='L').save(os.path.join(args.output_path, matte_name))
+        matte_name = im_name.split('.')[0] + '_output.png'
+        mask=Image.fromarray(((matte * 255).astype('uint8')), mode='L')    #.save(os.path.join(args.output_path, matte_name))
+        # ori = np.asarray(ori)
+        # mask = mask.resize(ori.size)
+        ori = cv2.cvtColor(np.asarray(ori), cv2.COLOR_RGB2BGR)
+        mask = cv2.cvtColor(np.asarray(mask), cv2.COLOR_RGB2BGR)
+        mask=cv2.cvtColor(mask,cv2.COLOR_BGR2GRAY)
+        ori=cv2.resize(ori,(mask.shape[1],mask.shape[0]))
+        # ret, mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)
+        # cv2.imshow('ori',mask)
+        # cv2.waitKey(0)
+        ori[mask == 0] = (255, 255, 255)
+        cv2.imshow('ori',ori)
+        cv2.waitKey(0)
+        output=cv2.resize(ori,(w,h))
+        cv2.imwrite(os.path.join(args.output_path, matte_name),ori)
+        # print(mask.shape)
+        # print(ori[0])
+        # print(im[0][0][0][0])
+        # output=im*mask
+        # output=Image.fromarray(output, mode='RGB')
+        # output.save(os.path.join(args.output_path, matte_name))
+
+
