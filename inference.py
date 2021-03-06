@@ -11,7 +11,7 @@ from src.models.modnet import MODNet
 
 input_path='inputs'
 output_path='outputs'
-ckpt_path='modnet_photographic_portrait_matting.ckpt'
+ckpt_path='pretrained/modnet_photographic_portrait_matting.ckpt'
 # check input arguments
 if not os.path.exists(input_path):
     print('Cannot find input path: {0}'.format(input_path))
