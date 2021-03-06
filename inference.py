@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from PIL import Image
-import cv2
 
 import torch
 import torch.nn as nn
@@ -107,33 +106,9 @@ for im_name in im_names:
     # resize and save matte
     matte = F.interpolate(matte, size=(im_h, im_w), mode='area')
     matte = matte[0][0].data.cpu().numpy()
-    print(matte)
     matte_name = im_name.split('.')[0] + '_mask.png'
     res_name=im_name.split('.')[0] + '_result.png'
-    # print(matte.shape)
-    # fg = matte * ori + (1 - matte) * np.full(ori.shape, 0.0)
     Image.fromarray(((matte*255).astype('uint8')), mode='L').save(os.path.join(output_path, matte_name))
     save_fg(ori,matte,os.path.join(output_path,res_name))
-    # print(matte[0])
-    # matte= matte.convert("RGB")
-    # print(matte.size)
-    # fg = matte * ori + (1-matte)*np.full(ori.shape, 0.0)
-    # print(matte.size)
-    # matte= cv2.cvtColor(np.asarray(matte), cv2.COLOR_RGB2BGR)
-    # img = cv2.imread(os.path.join(input_path, im_name))
-    # matting = cv2.imread(matte, cv2.IMREAD_GRAYSCALE)
-    # fg = matte * img + (1 - matte) * np.full(img.shape, 0.0)
-    # ori = Image.fromarray(((matte * 255).astype('uint8')))
-    # ori=Image.fromarray(ori)
-    # fg = matte * ori + (1 - matte) * np.full(ori.shape, 0.0)
-    # fg.save(os.path.join(output_path, matte_name))
-    # mask.save('mask.png')
-    # ori = cv2.cvtColor(np.asarray(ori), cv2.COLOR_RGB2BGR)
-    # mask = cv2.cvtColor(np.asarray(mask), cv2.COLOR_RGB2BGR)
-    # mask=cv2.cvtColor(mask,cv2.COLOR_BGR2GRAY)
-
-    # cv2.imwrite('mask2.png',mask)
-    # ori[mask == 0] = (255, 255, 255)
-    # cv2.imwrite(os.path.join(output_path, matte_name),ori)
 
 
