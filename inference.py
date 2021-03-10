@@ -111,4 +111,3 @@ for im_name in im_names:
     Image.fromarray(((matte*255).astype('uint8')), mode='L').save(os.path.join(output_path, matte_name))
     save_fg(ori,matte,os.path.join(output_path,res_name))
 
-
